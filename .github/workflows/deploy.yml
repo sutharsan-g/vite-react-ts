@@ -24,14 +24,22 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build project
-        run: npm run build
-        
       - name: Set up Git user for deployment
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@github.com"
         
+      - name: Set environment variables before build
+        run: |
+          echo "VITE_GH_TOKEN=${{ secrets.GH_TOKEN }}" >> .env
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Build project
+        run: npm run build
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
       - name: Print environment variables for debugging
         run: echo "GH_TOKEN=$GH_TOKEN"
         
