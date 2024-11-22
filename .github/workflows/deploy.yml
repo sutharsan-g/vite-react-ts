@@ -29,21 +29,43 @@ jobs:
           git config --global user.name "GitHub Actions"
           git config --global user.email "github-actions@github.com"
         
-      - name: Set environment variables before build
+      # Set environment for production if on the main branch
+      - name: Set environment for production
+        if: github.ref == 'refs/heads/main'  # Only for the main branch (production)
         run: |
-          echo "VITE_API_URL=${{ vars.VITE_API_URL }}" >> .env
+          echo "VITE_API_URL=${{ vars.VITE_PROD_API_URL }}" >> .env.production
+          echo "VITE_BASE_URL=${{ vars.VITE_PROD_BASE_URL }}" >> .env.production
+          echo "VITE_GH_TOKEN=${{ secrets.GH_TOKEN }}" >> .env.production
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Build project
-        run: npm run build
+      # Set environment for development if dev branch
+      - name: Set environment for development
+        if: github.ref == 'refs/heads/dev'  # For non-main branches (e.g., feature branches or PRs)
+        run: |
+          echo "VITE_API_URL=${{ vars.VITE_DEV_API_URL }}" >> .env.development
+          echo "VITE_BASE_URL=${{ vars.VITE_DEV_BASE_URL }}" >> .env.production
+          echo "VITE_GH_TOKEN=${{ secrets.GH_TOKEN }}" >> .env.development
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Print environment variables for debugging
-        run: echo "GH_TOKEN=$GH_TOKEN"
-        
+      # Build the project for production
+      - name: Build project for production
+        if: github.ref == 'refs/heads/main'  # Only for production (main branch)
+        run: npm run build --mode production
+        env:
+          VITE_GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass the token to the build
+
+      # Run dev server (for testing in development environment)
+      - name: Run dev server for development
+        if: github.ref == 'refs/heads/dev'  # For dev branches (development)
+        run: npm run dev
+        env:
+          VITE_GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass the token to the dev server
+
+      # Deploy to GitHub Pages (production)
       - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'  # Only for production (main branch)
         run: |
           git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
           npm run deploy
