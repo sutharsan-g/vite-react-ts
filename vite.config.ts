@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   base:"/vite-react-ts",
   build: { 
-    rollupOptions: { input: 'production/index.html', }, 
+    outDir :"build/production",
+    rollupOptions: { input: 'index.html', }, 
   },
 })
