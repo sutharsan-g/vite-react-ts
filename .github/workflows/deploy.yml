@@ -36,6 +36,8 @@ jobs:
         run: echo "GH_TOKEN=$GH_TOKEN"
         
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        run: |
+          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          npm run deploy
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
