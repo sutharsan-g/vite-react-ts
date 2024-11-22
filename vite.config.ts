@@ -7,7 +7,7 @@ export default defineConfig({
   base:"/vite-react-ts",
    build: {
     rollupOptions: {
-      input: 'index.html',  
+      input: 'production/index.html',  
     },
     outDir: 'dist', 
   },
