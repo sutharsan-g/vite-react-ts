@@ -5,8 +5,4 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   base:"/vite-react-ts",
-  build: { 
-    outDir :"dist/production",
-    rollupOptions: { input: 'index.html', }, 
-  },
 })
