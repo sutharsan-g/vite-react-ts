@@ -60,7 +60,7 @@ jobs:
       # Run dev server (for testing in development environment)
       - name: Run dev server for development
         if: github.ref == 'refs/heads/dev'  # For dev branch (development)
-        run: npm run dev
+        run: npm run build:dev
         env:
           VITE_GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass the token to the dev server
 
