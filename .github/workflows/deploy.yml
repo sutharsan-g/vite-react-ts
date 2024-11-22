@@ -27,7 +27,7 @@ jobs:
       - name: Build project
         run: npm run build
         
-       - name: Print environment variables for debugging
+      - name: Print environment variables for debugging
         run: echo "GH_TOKEN=$GH_TOKEN"
         
       - name: Deploy to GitHub Pages
