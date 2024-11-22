@@ -3,7 +3,8 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches:
-      - main  # or your default branch (e.g., master)
+      - main  # Production branch
+      - dev   # Development branch
   pull_request:
     branches:
       - main
@@ -39,9 +40,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      # Set environment for development if dev branch
+      # Set environment for development if on the dev branch
       - name: Set environment for development
-        if: github.ref == 'refs/heads/dev'  # For non-main branches (e.g., feature branches or PRs)
+        if: github.ref == 'refs/heads/dev'  # For dev branch (development)
         run: |
           echo "VITE_API_URL=${{ vars.VITE_DEV_API_URL }}" >> .env.development
           echo "VITE_BASE_URL=${{ vars.VITE_DEV_BASE_URL }}" >> .env.development
@@ -51,23 +52,32 @@ jobs:
 
       # Build the project for production
       - name: Build project for production
-        if: github.ref == 'refs/heads/main'  # Only for production (main branch)
+        if: github.ref == 'refs/heads/main'  # Only for the main branch (production)
         run: npm run build --mode production
         env:
           VITE_GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass the token to the build
 
       # Run dev server (for testing in development environment)
       - name: Run dev server for development
-        if: github.ref == 'refs/heads/dev'  # For dev branches (development)
+        if: github.ref == 'refs/heads/dev'  # For dev branch (development)
         run: npm run dev
         env:
           VITE_GH_TOKEN: ${{ secrets.GH_TOKEN }}  # Pass the token to the dev server
 
-      # Deploy to GitHub Pages (production)
-      - name: Deploy to GitHub Pages
+      # Deploy to GitHub Pages (Production)
+      - name: Deploy to GitHub Pages (Production)
         if: github.ref == 'refs/heads/main'  # Only for production (main branch)
         run: |
           git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
-          npm run deploy
+          npm run deploy -- --branch gh-pages  # Specify production branch (gh-pages)
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      # Deploy to GitHub Pages (Development)
+      - name: Deploy to GitHub Pages (Development)
+        if: github.ref == 'refs/heads/dev'  # Only for dev branch (development)
+        run: |
+          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
+          npm run deploy -- --branch dev-gh-pages  # Specify dev branch (dev-gh-pages)
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
