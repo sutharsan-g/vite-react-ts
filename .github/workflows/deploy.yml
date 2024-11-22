@@ -44,7 +44,7 @@ jobs:
         if: github.ref == 'refs/heads/dev'  # For non-main branches (e.g., feature branches or PRs)
         run: |
           echo "VITE_API_URL=${{ vars.VITE_DEV_API_URL }}" >> .env.development
-          echo "VITE_BASE_URL=${{ vars.VITE_DEV_BASE_URL }}" >> .env.production
+          echo "VITE_BASE_URL=${{ vars.VITE_DEV_BASE_URL }}" >> .env.development
           echo "VITE_GH_TOKEN=${{ secrets.GH_TOKEN }}" >> .env.development
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
